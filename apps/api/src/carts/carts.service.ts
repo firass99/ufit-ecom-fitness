@@ -122,13 +122,14 @@ export class CartsService {
 
     console.log('THIS IS ADD TO CART ITEMS DTO  : ', dto);
 
-    const cart = await this.prisma.cart.findUnique({
+    const cart = await this.prisma.cart.upsert({
       where: { userId },
+      create: {
+        user: { connect: { id: userId } },
+        currency: dto.currency,
+      },
+      update: {},
     });
-
-    if (!cart) {
-      throw new NotFoundException(`Cart not found for user ${userId}`);
-    }
 
     const currency = dto.currency;
     let stock = 0;

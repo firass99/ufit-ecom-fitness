@@ -1,99 +1,240 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# UFitPal API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+REST API for the UFitPal storefront and dashboards. NestJS 11 on Express, Prisma over
+PostgreSQL, Passport for authentication, Meilisearch for product search.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Runs on **port 5000** (`PORT` env overrides). Swagger UI at **http://localhost:5000/api**.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Contents
 
-## Project setup
+- [Running it](#running-it)
+- [Environment](#environment)
+- [Module layout](#module-layout)
+- [Authentication](#authentication)
+- [Security posture](#security-posture)
+- [Search](#search)
+- [File uploads](#file-uploads)
+- [Conventions](#conventions)
+
+---
+
+## Running it
+
+From the repo root (preferred — starts the storefront too):
 
 ```bash
-$ pnpm install
+pnpm dev
 ```
 
-## Compile and run the project
+Or just this app:
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+pnpm --filter api dev      # nest start --watch
 ```
 
-## Run tests
+| Script                   | Does                   |
+| ------------------------ | ---------------------- |
+| `pnpm dev` / `start:dev` | Watch mode             |
+| `pnpm build`             | `nest build` → `dist/` |
+| `pnpm start:prod`        | `node dist/main`       |
+| `pnpm start:debug`       | Watch + `--inspect`    |
+| `pnpm lint`              | ESLint with `--fix`    |
+| `pnpm test`              | Jest unit tests        |
+| `pnpm test:e2e`          | Jest e2e config        |
+
+---
+
+## Environment
+
+**The API validates its environment at boot and throws before listening** if anything is
+missing, or if `JWT_SECRET` / `REFRESH_JWT_SECRET` / `SESSION_SECRET` are shorter than 32
+characters. See [`src/config/env.validation.ts`](src/config/env.validation.ts).
+
+This is deliberate: a missing OAuth secret should fail loudly at startup, not produce a
+confusing redirect loop at runtime. If the process exits immediately on `pnpm dev`, read the
+error — it names exactly which variables are at fault.
+
+Required in `apps/api/.env`:
+
+| Variable                                                  | Notes                                                 |
+| --------------------------------------------------------- | ----------------------------------------------------- |
+| `DATABASE_URL`                                            | PostgreSQL connection string                          |
+| `JWT_SECRET`                                              | Access token signing key — min 32 chars               |
+| `REFRESH_JWT_SECRET`                                      | Refresh token signing key — min 32 chars              |
+| `SESSION_SECRET`                                          | min 32 chars                                          |
+| `API_BASE_URL`                                            | e.g. `http://localhost:5000`                          |
+| `UFITPAL_FRONT`                                           | Storefront origin — used for CORS and OAuth redirects |
+| `GOOGLE_CLIENT_ID` / `_SECRET` / `_CALLBACK_URL`          | Google OAuth                                          |
+| `FACEBOOK_CLIENT_ID` / `_SECRET` / `_CALLBACK_URL`        | Facebook OAuth                                        |
+| `MAIL_HOST` / `MAIL_PORT` / `MAIL_USER` / `MAIL_PASSWORD` | Nodemailer, for magic-link login                      |
+| `MEILI_ADMIN_API_KEY`                                     | Meilisearch admin key                                 |
+
+Optional: `PORT` (default `5000`), `UFITPAL_DASH` (extra CORS origin), `NODE_ENV`.
+
+Generate secrets with `openssl rand -base64 48`.
+
+---
+
+## Module layout
+
+Standard Nest feature-module structure — each folder is a `*.module.ts` plus its controller,
+service, and DTOs.
+
+```
+src/
+├── main.ts                  bootstrap: Swagger, CORS, pipes, helmet, cookies
+├── app.module.ts            root module, global ConfigModule + ThrottlerGuard
+├── config/
+│   └── env.validation.ts    fail-fast env check
+├── database/                PrismaService wrapper over @repo/database
+├── auth/                    ← see below
+├── sessions/                refresh-token session records
+├── users/
+├── athletes/  coachs/  nutritionists/     role-specific profiles
+├── products/  variants via Prisma
+├── categories/  brands/  promotions/
+├── carts/  orders/  payments/
+├── analytics/               dashboard aggregate queries
+├── meilisearch/             search index client
+└── multer/                  upload handling
+```
+
+### Domain modules at a glance
+
+| Module       | Responsibility                                                                                                                   |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| `products`   | Catalog CRUD, filtering (size, gender, brand, category, availability, price sort), per-locale translations, per-currency pricing |
+| `carts`      | Cart + cart items, keyed to a user and a currency                                                                                |
+| `orders`     | Order lifecycle — `PENDING` → `DELIVERED` / `CANCELLED`                                                                          |
+| `payments`   | Payment records with `PENDING` → `PROCESSING` → `SUCCEEDED` / `FAILED` / `REFUNDED`                                              |
+| `promotions` | `Promo` codes, `PERCENTAGE` or `FIXED` discount                                                                                  |
+| `analytics`  | Aggregations backing the admin dashboard charts                                                                                  |
+| `sessions`   | One row per active login, holding the argon2 refresh-token hash                                                                  |
+
+---
+
+## Authentication
+
+`@Controller('auth')` — all routes below are prefixed `/auth`.
+
+| Route                                  | Guard                         | Purpose                        |
+| -------------------------------------- | ----------------------------- | ------------------------------ |
+| `GET /auth/google/login`               | `GoogleAuthGuard`             | Starts Google OAuth            |
+| `GET /auth/google/callback`            | `GoogleAuthGuard`             | Google redirect target         |
+| `GET /auth/facebook/login`             | `FacebookAuthGuard`           | Starts Facebook OAuth          |
+| `GET /auth/facebook/callback`          | `FacebookAuthGuard`           | Facebook redirect target       |
+| `POST /auth/link/login`                | —                             | Request an email magic link    |
+| `GET /auth/link/callback`              | —                             | Consume the magic-link token   |
+| `POST /auth/refresh`                   | `RefreshJwtGuard`             | Rotate tokens                  |
+| `GET /auth/profile`                    | `JwtAuthGuard`                | Current user                   |
+| `POST /auth/logout`                    | `JwtAuthGuard`                | End this session               |
+| `POST /auth/logout-all`                | `JwtAuthGuard`                | End every session for the user |
+| `GET /auth/admin` · `/user` · `/multi` | `JwtAuthGuard` + `RolesGuard` | Role-gate probes               |
+
+### Passport strategies
+
+Four, in [`src/auth/strategies/`](src/auth/strategies):
+
+- `jwt.strategy.ts` — validates the access token
+- `refresh.strategy.ts` — validates the refresh token
+- `google.strategy.ts` — `passport-google-oauth20`
+- `facebook.strategy.ts` — `passport-facebook`
+
+Config is bound through typed factories in [`src/auth/configs/`](src/auth/configs) and
+registered in `ConfigModule.forRoot({ load: [...] })`, so strategies receive
+`ConfigType<typeof jwtConfig>` rather than reading `process.env` directly.
+
+### Token rotation
+
+1. On login, `generateTokens()` issues an access token and a refresh token.
+2. The refresh token is hashed with **argon2** and stored on a `Session` row — the plaintext
+   is only ever sent to the client.
+3. `POST /auth/refresh` verifies the presented token against the stored hash with
+   `argon2.verify`, then issues a fresh pair and replaces the stored hash.
+
+So a database compromise does not hand an attacker usable refresh tokens, and rotation
+invalidates the previous token on every refresh.
+
+### Role authorization
+
+`Role` comes from the Prisma enum: `ADMIN`, `ATHLETE`, `NUTRITIONIST`, `COACH`.
+
+```ts
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.ADMIN)
+@Get('admin')
+getAdminArea() { /* ... */ }
+```
+
+`RolesGuard` reads the `@Roles()` metadata; without `JwtAuthGuard` in front of it there is no
+user to check, so the two always pair.
+
+---
+
+## Security posture
+
+Configured in [`src/main.ts`](src/main.ts) and `app.module.ts`:
+
+- **Helmet**, with `crossOriginResourcePolicy: 'cross-origin'` so the storefront on a
+  different port can load `/uploads` images.
+- **CORS allowlist** built from `UFITPAL_FRONT` and `UFITPAL_DASH`. `localhost:8000` and
+  `localhost:9000` are appended only when `NODE_ENV !== 'production'`. `credentials: true`,
+  since auth rides on cookies.
+- **Global `ValidationPipe`** with `transform`, `whitelist`, and `forbidNonWhitelisted`.
+  Unknown payload properties cause a 400 rather than being stripped silently — which means
+  a renamed DTO field surfaces as a test failure instead of a null column.
+- **Global `ThrottlerGuard`** — 100 requests per 60s, registered via `APP_GUARD`.
+- **`cookie-parser`** for reading the auth cookies.
+- **argon2** for all password and refresh-token hashing. No bcrypt, no plaintext.
+
+---
+
+## Search
+
+Meilisearch, wrapped in `MeilisearchModule`. The service exposes an index accessor and
+`addDocuments` for sync. The storefront queries Meilisearch through its own client in
+`apps/ecom-store/lib/meilsearch/`. Requires `MEILI_ADMIN_API_KEY` and a reachable
+Meilisearch instance.
+
+---
+
+## File uploads
+
+- `MulterModule` handles multipart uploads, written to `apps/api/uploads/`.
+- `ServeStaticModule` serves that directory at `/uploads`.
+
+Note this is **local disk storage** — it does not survive a container rebuild and won't work
+across multiple instances. Moving to object storage is the obvious next step if this is
+deployed horizontally.
+
+---
+
+## Conventions
+
+- **One feature per module.** New domain area → new folder with its own module, controller,
+  service, DTOs.
+- **DTOs do the validating.** `class-validator` decorators on DTO classes, not manual checks
+  in controllers. `@nestjs/mapped-types` (`PartialType`) for update DTOs.
+- **Config through `ConfigService`**, not `process.env`, in anything injectable. Add genuinely
+  required variables to `REQUIRED_ENV_VARS` in `env.validation.ts` so they fail at boot.
+- **Prisma types over hand-written interfaces.** Import enums and models from
+  `@repo/database`; redefining them locally is how the two drift apart.
+- **Swagger annotations** on public endpoints — the spec at `/api` is generated from them.
+
+### Troubleshooting
+
+**Can't reach a route / connection refused on :5000** — the process almost certainly isn't
+running, or it threw during env validation. Check in that order:
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+netstat -ano | grep LISTENING | grep :5000    # is anything bound?
+pnpm --filter api dev                         # read any boot error in full
 ```
 
-## Deployment
+**OAuth redirect mismatch** — `GOOGLE_CALLBACK_URL` / `FACEBOOK_CALLBACK_URL` must match the
+redirect URI registered in the provider console _exactly_, including port and scheme.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ pnpm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+**CORS error from the storefront** — `UFITPAL_FRONT` must match the browser's origin, and in
+production the localhost fallbacks are not added.

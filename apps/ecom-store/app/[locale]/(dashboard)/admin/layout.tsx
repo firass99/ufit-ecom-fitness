@@ -27,9 +27,9 @@ export default async function AdminDashboardLayout({
 
   // If no session, redirect to login
   if (!session) {
-    redirect('/account');
+    redirect(`/${locale}/account`);
   } else if (session?.user.role !== 'ADMIN') {
-    redirect('/');
+    redirect(`/${locale}`);
   }
 
   return (

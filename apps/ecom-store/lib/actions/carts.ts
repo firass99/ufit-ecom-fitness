@@ -31,13 +31,15 @@ export interface ClearCartDto {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// Get user's cart
-export async function getCart(userId: string): Promise<Cart> {
+// Get user's cart. A user who has never added anything has no cart row yet,
+// which the API reports as 404 — that is an empty cart, not an error.
+export async function getCart(userId: string): Promise<Cart | null> {
   const res = await fetch(`${API_URL}/carts/${userId}`, {
     cache: 'no-store',
     credentials: 'include',
   });
 
+  if (res.status === 404) return null;
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }

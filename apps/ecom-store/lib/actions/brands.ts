@@ -4,7 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL as string;
 
 export async function getBrands(page: number = 1, limit: number = 10) {
   const res = await fetch(`${API_URL}/brands?page=${page}&limit=${limit}`, {
-    cache: 'no-store',
+    cache: 'force-cache',
     next: { tags: ['brands'] },
   });
 
@@ -14,7 +14,7 @@ export async function getBrands(page: number = 1, limit: number = 10) {
 
 export async function getBrand(id: string) {
   const res = await fetch(`${API_URL}/brands/${id}`, {
-    cache: 'no-store',
+    cache: 'force-cache',
     next: { tags: ['brands'] },
   });
 

@@ -17,6 +17,7 @@ import { FacebookAuthGuard } from './guards/facebook-auth.guard';
 import { Roles } from './decorators/roles.decorator';
 import { Role } from './enums/roles.enum';
 import { RolesGuard } from './guards/roles.guard';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -25,16 +26,14 @@ export class AuthController {
   //api for admin
   // @Roles('ADMIN') or @Roles(Roles.ADMIN)
   @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('admin')
   admin(@Req() req, @Res() res) {
     return res.json({ message: 'You are an ' + req.user.role, USER: req.user });
   }
   //api for user
   @Roles(Role.ATHLETE)
-  @UseGuards(RolesGuard)
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('user')
   athlete(@Req() req, @Res() res) {
     return res.json({ message: 'You are an ' + req.user.role, USER: req.user });
@@ -42,8 +41,7 @@ export class AuthController {
 
   //api for user
   @Roles(Role.ATHLETE, Role.ADMIN)
-  @UseGuards(RolesGuard)
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('multi')
   multipleRole(@Req() req, @Res() res) {
     return res.json({
@@ -59,23 +57,13 @@ export class AuthController {
   // GOOGLE LOGIN CONTROLLER
   @UseGuards(GoogleAuthGuard)
   @Get('google/login')
-  googleLogin() {
-    console.log('GOOGLE LOGIN CONTROLLER');
-  }
+  googleLogin() {}
 
   @UseGuards(GoogleAuthGuard)
   @Get('google/callback')
   async googleCallback(@Req() req, @Res() res) {
-    console.log('this is reeq IDDDD: ', req.user.id);
-
     const { userId, role, accessToken, refreshToken } =
       await this.authService.login(req.user.id);
-    console.log('GOOGLE CallBack CONTROLLER', {
-      userId,
-      role,
-      accessToken,
-      refreshToken,
-    });
     // Set refreshToken as cookie
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -92,23 +80,13 @@ export class AuthController {
   // FACEBOOK LOGIN CONTROLLER
   @UseGuards(FacebookAuthGuard)
   @Get('facebook/login')
-  facebookLogin() {
-    console.log('FACEBOOK LOGIN CONTROLLER');
-  }
+  facebookLogin() {}
 
   @UseGuards(FacebookAuthGuard)
   @Get('facebook/callback')
   async facebookCallback(@Req() req, @Res() res) {
-    console.log('this is reeq IDDDD: ', req.user.id);
-
     const { userId, role, accessToken, refreshToken } =
       await this.authService.login(req.user.id);
-    console.log('FACEBOOK CallBack CONTROLLER', {
-      userId,
-      role,
-      accessToken,
-      refreshToken,
-    });
     // Set refreshToken as cookie
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -123,9 +101,10 @@ export class AuthController {
   // END FACEBOOK LOGIN CONTROLLER
 
   // MAIL LOGIN CONTROLLER
+  // Sends an email per call, so it is rate limited well below the global default.
+  @Throttle({ default: { ttl: 60_000, limit: 5 } })
   @Post('link/login')
   async linkLogin(@Body() body: { email: string }) {
-    console.log('LINK LOGIN CONTROLLER', body.email);
     return await this.authService.sendLoginEmail(body.email);
   }
 
@@ -134,10 +113,8 @@ export class AuthController {
     if (!token) {
       throw new UnauthorizedException('Token is missing');
     }
-    console.log('Received token:', token); // Log the received token
 
     const user = await this.authService.validateLoginToken(token);
-    console.log('NEW USER ADDED', user);
 
     if (!user) {
       throw new UnauthorizedException(
@@ -146,12 +123,6 @@ export class AuthController {
     }
     const { userId, role, accessToken, refreshToken } =
       await this.authService.login(user.id); // Use your existing login method
-    console.log('LINK CALLBACK CONTROLLER', {
-      userId,
-      role,
-      accessToken,
-      refreshToken,
-    });
     // Set refreshToken as cookie
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -178,24 +149,8 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Req() req, @Res() res) {
-    console.log('this is profile : ', req.user);
     return res.json(req.user);
   }
-
-  //LOGOUTS
-  /*  @UseGuards(JwtAuthGuard)
-   @Post('logout')
-     async logout(@Req() req, @Res() res) {
-       console.log('Logout request');
-       const userId = req.user.id;
-       const sessionId = req.user.session?.id;
-       const result = await this.authService.logout(userId, sessionId);
-   
-       // Clear any client-side tokens or cookies if needed
-       //res.clearCookie('access_token');
-       res.clearCookie('refresh_token');
-       return res.json(result);
-     } */
 
   @Post('logout')
   @UseGuards(JwtAuthGuard)
@@ -208,14 +163,9 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('logout-all')
   async logoutAllSessions(@Req() req, @Res() res) {
-    console.log('Logout all sessions request');
     const userId = req.user.id;
     const result = await this.authService.logout(userId);
-
-    // Clear any client-side tokens or cookies if needed
-    res.clearCookie('access_token');
-    res.clearCookie('refresh_token');
-
+    res.clearCookie('refreshToken');
     return res.json(result);
   }
 }

@@ -9,15 +9,12 @@ export class MeilisearchService {
   constructor() {
     this.client = new MeiliSearch({
       host: process.env.MEILI_HOST || 'http://localhost:7700',
-      apiKey: process.env.MEILI_ADMIN_API_KEY || 'supersecretadminkeynew',
+      apiKey: process.env.MEILI_ADMIN_API_KEY,
     });
   }
 
   private getIndex(indexName: string): Index {
-    const indexed = this.client.index(indexName);
-    this.logger.debug('Payload to Meili:', JSON.stringify(indexName, null, 2));
-
-    return indexed;
+    return this.client.index(indexName);
   }
 
   async addOrUpdate<T extends object>(
@@ -29,10 +26,6 @@ export class MeilisearchService {
       await index.addDocuments(documents);
       this.logger.log(
         `Indexed ${documents.length} document(s) to "${indexName}"`,
-      );
-      this.logger.debug(
-        'Payload to Meili:',
-        JSON.stringify(documents, null, 2),
       );
     } catch (err) {
       this.logger.error(`Failed to index documents to "${indexName}"`, err);

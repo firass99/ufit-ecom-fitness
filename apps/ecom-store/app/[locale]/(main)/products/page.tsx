@@ -3,8 +3,6 @@ import { getCategories } from '@/lib/actions/categories';
 import { getProducts, type FilterProductsDto } from '@/lib/actions/products';
 import { getBrands } from '@/lib/actions/brands';
 
-export const dynamic = 'force-dynamic';
-
 type SP = Record<string, string | string[] | undefined> | undefined;
 
 function one(sp: NonNullable<SP>, key: string, def = ''): string {

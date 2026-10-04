@@ -53,7 +53,9 @@
     "free": "Free",
     "checkout": "Proceed to Checkout",
     "close": "Close",
-    "each": "per piece"
+    "each": "per piece",
+    "max_stock": "No more stock available for this item.",
+    "error": "Could not update your cart. Please try again."
   },
   "hero": {
     "tagline": "Your daily deal destination",

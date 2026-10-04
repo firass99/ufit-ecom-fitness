@@ -6,8 +6,7 @@ import { toast } from 'sonner';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useLocale } from 'next-intl';
 import { getSession } from '@/lib/actions/session';
-import { getUser } from '@/lib/actions/users';
-import { addToCart, createCart, getCart } from '@/lib/actions/carts';
+import { addToCart, getCart } from '@/lib/actions/carts';
 import { Product, Variant } from '@/lib/types/types';
 import { useCurrencyStore } from '@/lib/store/useCurrencyStore';
 
@@ -47,29 +46,20 @@ export function AddToCartButton({
       return;
     }
 
-    try {
-      const user = await getUser(session.user.id);
+    const userId = session.user.id;
 
-      const payload = {
-        userId: user.id,
+    try {
+      await addToCart({
+        userId,
         quantity,
         currency,
         ...(activeVariant
           ? { variantId: activeVariant.id }
           : { productId: product.id }),
-      };
+      });
 
-      try {
-        await getCart(user.id);
-      } catch {
-        await createCart({ userId: user.id, currency });
-      }
-
-      // ✅ Call with object now
-      await addToCart(payload);
-
-      const updatedCart = await getCart(user.id);
-      setCart(updatedCart.items || []);
+      const updatedCart = await getCart(userId);
+      setCart(updatedCart?.items || []);
       toast.success(
         `${productName} ${locale === 'ar' ? 'تمت إضافته!' : 'added to cart!'}`,
       );

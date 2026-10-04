@@ -83,7 +83,7 @@ function toQueryString(params: Record<string, any>) {
 export async function getProducts(filters: FilterProductsDto = {}) {
   const qs = toQueryString(filters);
   const res = await fetch(`${API_URL}/products${qs ? `?${qs}` : ''}`, {
-    next: { tags: ['products'] },
+    next: { revalidate: 60, tags: ['products'] },
   });
 
   if (!res.ok) {
@@ -97,7 +97,7 @@ export async function getProducts(filters: FilterProductsDto = {}) {
 // ----- Fetch Single Product -----
 export async function getProduct(id: string, currency?: Currency) {
   const res = await fetch(`${API_URL}/products/${id}`, {
-    next: { tags: ['products'] },
+    next: { revalidate: 60, tags: ['products'] },
   });
 
   if (!res.ok) {

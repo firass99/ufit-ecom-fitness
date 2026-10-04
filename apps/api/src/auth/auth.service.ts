@@ -1,4 +1,9 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { ConfigType } from '@nestjs/config';
@@ -16,6 +21,8 @@ import { SessionsService } from 'src/sessions/sessions.service';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -26,13 +33,8 @@ export class AuthService {
 
   // validate user by email
   async validateOauthUser(User: CreateUserDto) {
-    console.log(' EMAIL FROM VALIDATE OAUTH .  ', User.email);
-
     const user = await this.usersService.findOneByEmail(User.email);
-    console.log('AFTER FIND ONE BY EMAIL');
-
     if (!user) {
-      console.log('No existing user found, creating new user');
       return await this.usersService.create(User);
     }
     return user;
@@ -96,31 +98,23 @@ export class AuthService {
 
   // refresh tokens
   async refreshToken(userId: string, sessionId: string) {
-    console.log('Refresh Token Request:', { userId, sessionId });
-
     const user = await this.validateJwtUser(userId);
     const validSession = await this.sessionsService.findById(sessionId);
 
-    console.log('Found Session:', validSession);
-
     if (!validSession) {
-      console.error('No valid session found');
+      this.logger.warn(`Refresh attempted with no valid session: ${sessionId}`);
       throw new UnauthorizedException('Invalid session');
     }
 
     // Verify the session belongs to the user
     if (validSession.userId !== userId) {
-      console.error('Session user mismatch', {
-        sessionUserId: validSession.userId,
-        requestUserId: userId,
-      });
+      this.logger.warn(`Session ${sessionId} does not belong to user ${userId}`);
       throw new UnauthorizedException('Session does not belong to user');
     }
 
     const { accessToken, refreshToken } = await this.generateTokens(user);
     const newHashedRefreshToken = await argon2.hash(refreshToken);
 
-    console.log('Generating new tokens');
     await this.sessionsService.updateOrCreateSession(
       userId,
       newHashedRefreshToken,
@@ -139,46 +133,25 @@ export class AuthService {
     sessionId: string,
     hashedRefreshToken: string,
   ) {
-    console.log('Validate Refresh Token:', {
-      userId,
-      sessionId,
-      hashedRefreshToken,
-    });
-
     const user = await this.usersService.findOne(userId);
     if (!user) {
-      console.error('User not found');
       throw new UnauthorizedException('User not found, UnauthorizedException');
     }
 
     const session = await this.sessionsService.findById(sessionId);
-    console.log('Found Session:', session);
 
     if (!session || !session.valid || session.userId !== userId) {
-      console.error('Invalid session', {
-        sessionExists: !!session,
-        sessionValid: session?.valid,
-        sessionUserId: session?.userId,
-        requestUserId: userId,
-      });
+      this.logger.warn(`Invalid session on refresh-token validation: ${sessionId}`);
       throw new UnauthorizedException('Invalid session');
     }
 
     // Verify the incoming refresh token against the stored hashed token
-    console.log(
-      'Verifying refresh token...',
-      { sessionToken: session.refreshToken },
-      { hashedToken: hashedRefreshToken },
-    );
     const isTokenValid = await argon2.verify(
       session.refreshToken,
       hashedRefreshToken,
     );
 
-    console.log('Token Verification Result:', isTokenValid);
-
     if (!isTokenValid) {
-      console.error('Token verification failed');
       throw new UnauthorizedException('Invalid refresh token');
     }
 
@@ -186,8 +159,6 @@ export class AuthService {
   }
 
   async logout(userId: string, sessionId?: string) {
-    console.log(`Logout request for user: ${userId}`);
-
     await this.usersService.update(userId, { isActive: false });
 
     if (sessionId) {
@@ -199,21 +170,6 @@ export class AuthService {
     return { message: 'Logout successful' };
   }
 
-  /* 
-    async logout(userId: string, sessionId?: string) {
-      console.log(`Logout request for user: ${userId}`);
-    
-      await this.usersService.update(userId, { isActive: false });
-    
-      if (sessionId) {
-        await this.sessionsService.invalidateSessionById(sessionId);
-      } else {
-        await this.sessionsService.invalidateAllUserSessions(userId);
-      }
-    
-      return { message: 'Logout successful' };
-    }
-   */
   // MAIL SERVICE
   async generateLoginToken(email: string): Promise<string> {
     const newUser: CreateUserDto = {
@@ -227,30 +183,21 @@ export class AuthService {
       fullName: user.fullName,
       email: user.email,
     };
-    const token = this.jwtService.sign(payload, { expiresIn: '15m' });
-    console.log('Generated token at:', new Date());
-    console.log('Token expires at:', new Date(Date.now() + 15 * 60 * 1000)); // Expiry time for 15 minutes
-    return token;
+    return this.jwtService.sign(payload, { expiresIn: '15m' });
   }
 
   async validateLoginToken(token: string) {
-    console.log('Validate login token service... ');
-
     try {
       const payload = this.jwtService.verify(token);
-      console.log('Token validated at:', new Date());
-      console.log('Token expiry:', new Date(payload.exp * 1000)); // Convert from seconds to ms
       return await this.usersService.findOneByEmail(payload.email);
     } catch {
-      throw new UnauthorizedException(
-        'Invalid or expired token FROM SERVICE UnauthorizedException',
-      );
+      throw new UnauthorizedException('Invalid or expired token');
     }
   }
 
   async sendLoginEmail(email: string) {
     const token = await this.generateLoginToken(email);
-    const loginUrl = `http://localhost:5000/auth/link/callback?token=${token}`;
+    const loginUrl = `${process.env.API_BASE_URL}/auth/link/callback?token=${token}`;
 
     // Replace placeholder with actual login URL
     let emailTemplate = template.replace('{{loginUrl}}', loginUrl);
@@ -264,17 +211,10 @@ export class AuthService {
     return await this.sendLoginLink(emailContent);
   }
 
-  //BY GPT:
   async mailTransport() {
-    console.log('Creating Mail Transport');
-    console.log(process.env.MAIL_HOST);
-    console.log(process.env.MAIL_PORT);
-    console.log(process.env.MAIL_USER);
-    console.log(process.env.MAIL_PASSWORD);
-
     return nodemailer.createTransport({
       host: process.env.MAIL_HOST,
-      port: parseInt(process.env.MAIL_PORT, 10),
+      port: parseInt(process.env.MAIL_PORT ?? '587', 10),
       secure: false,
       auth: {
         user: process.env.MAIL_USER,
@@ -299,13 +239,9 @@ export class AuthService {
     };
 
     try {
-      const info = await transporter.sendMail(options);
-
-      console.log('Message<ID> sent :', info.messageId);
-      console.log('Message response :', info.response);
-      console.log('Message Body :', options);
+      await transporter.sendMail(options);
     } catch (error) {
-      console.error('Error sending email:', error);
+      this.logger.error(`Failed to send login email to ${recipient}`, error);
     }
   }
 

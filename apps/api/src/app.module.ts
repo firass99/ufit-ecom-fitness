@@ -24,6 +24,9 @@ import { SessionsModule } from './sessions/sessions.module';
 import { BrandsModule } from './brands/brands.module';
 import { PromotionsModule } from './promotions/promotions.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { validateEnv } from './config/env.validation';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -35,6 +38,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
       isGlobal: true,
       expandVariables: true,
       load: [googleOauthConfig, jwtConfig, refreshJwtConfig], //load config file
+      validate: validateEnv,
     }),
     ProductsModule,
     CategoriesModule,
@@ -54,9 +58,10 @@ import { AnalyticsModule } from './analytics/analytics.module';
     BrandsModule,
     PromotionsModule,
     AnalyticsModule,
+    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 100 }]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
   exports: [AppService],
 })
 export class AppModule {}

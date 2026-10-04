@@ -22,9 +22,9 @@ export default async function AthleteDashboardLayout({
 
   // If no session, redirect to login
   if (!session) {
-    redirect('/');
+    redirect(`/${locale}`);
   } else if (session?.user.role !== 'ATHLETE') {
-    redirect('/');
+    redirect(`/${locale}`);
   }
 
   return (

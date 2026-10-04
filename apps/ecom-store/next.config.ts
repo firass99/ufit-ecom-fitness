@@ -8,8 +8,10 @@ const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   reactStrictMode: false, // Disabled to prevent duplicate requests in development
-  swcMinify: true,
   productionBrowserSourceMaps: false,
+
+  // Keep these out of the bundler: they patch module loading at runtime.
+  serverExternalPackages: ['import-in-the-middle', 'require-in-the-middle'],
   logging: {
     fetches: {
       fullUrl: true,
@@ -65,13 +67,6 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'medusa-server-testing.s3.us-east-1.amazonaws.com',
       },
-    ],
-  },
-  experimental: {
-    // ⛔️ Prevent Next.js from trying to externalize these hook-based packages
-    serverComponentsExternalPackages: [
-      'import-in-the-middle',
-      'require-in-the-middle',
     ],
   },
 };

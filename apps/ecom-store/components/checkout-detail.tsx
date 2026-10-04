@@ -98,7 +98,7 @@ export default function CheckoutDetail({ userId }: { userId: string | null }) {
       quantity: 1,
     });
     const cart = await getCart(userId);
-    setCart(cart.items || []);
+    setCart(cart?.items || []);
   };
 
   const handleMinus = async (
@@ -120,14 +120,14 @@ export default function CheckoutDetail({ userId }: { userId: string | null }) {
       });
     }
     const cart = await getCart(userId);
-    setCart(cart.items || []);
+    setCart(cart?.items || []);
   };
 
   const handleRemove = async (itemId: string) => {
     if (!userId) return;
     await removeFromCart(userId, itemId);
     const cart = await getCart(userId);
-    setCart(cart.items || []);
+    setCart(cart?.items || []);
   };
 
   const subtotal = items.reduce((sum, item) => {
@@ -327,7 +327,7 @@ export default function CheckoutDetail({ userId }: { userId: string | null }) {
       quantity: 1,
     });
     const cart = await getCart(userId);
-    setCart(cart.items || []);
+    setCart(cart?.items || []);
   };
 
   const handleMinus = async (
@@ -349,14 +349,14 @@ export default function CheckoutDetail({ userId }: { userId: string | null }) {
       });
     }
     const cart = await getCart(userId);
-    setCart(cart.items || []);
+    setCart(cart?.items || []);
   };
 
   const handleRemove = async (itemId: string) => {
     if (!userId) return;
     await removeFromCart(userId, itemId);
     const cart = await getCart(userId);
-    setCart(cart.items || []);
+    setCart(cart?.items || []);
   };
 
   const handleCheckout = async () => {

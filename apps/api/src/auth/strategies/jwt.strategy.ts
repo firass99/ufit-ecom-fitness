@@ -23,11 +23,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   async validate(payload: JwtPayload) {
     // Extracts and pass to this func then return the user ID from the payload
     const userId = payload.id;
-    console.log('LOCAL . JWT STRATEGY PAYLOAD ');
-    console.log('JWT Payload :', payload);
-
-    const user = await this.authService.validateJwtUser(userId);
-    console.log('THIS IS USER FROM JWT STRATEGY', user);
-    return user;
+    return await this.authService.validateJwtUser(userId);
   }
 }

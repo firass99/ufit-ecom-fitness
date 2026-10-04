@@ -34,7 +34,8 @@ export default function NavbarSection() {
   const t = useTranslations('navbar');
   const account = {
     title: t('Account.title'),
-    url: t('Account.url'),
+    // Prefix the locale so the click doesn't cost an extra next-intl redirect.
+    url: `/${locale}${t('Account.url')}`,
   };
   const placeholder = t('search.placeholder');
   const [search, setSearch] = useState('');
@@ -79,7 +80,9 @@ export default function NavbarSection() {
               className="bg-gradient-to-r from-primary to-orange-500 text-white hover:from-orange-600 hover:to-orange-400 transition"
               asChild
             >
-              <Link href={account.url}>{account.title}</Link>
+              <Link href={account.url} prefetch>
+                {account.title}
+              </Link>
             </Button>
           </div>
 
@@ -117,7 +120,9 @@ export default function NavbarSection() {
                     className="w-full bg-gradient-to-r from-primary to-orange-500 text-white hover:from-orange-600 hover:to-orange-400"
                     asChild
                   >
-                    <Link href={account.url}>{account.title}</Link>
+                    <Link href={account.url} prefetch>
+                {account.title}
+              </Link>
                   </Button>
                   <div className="flex gap-2 items-center justify-center mt-2">
                     <CartCountBadge />

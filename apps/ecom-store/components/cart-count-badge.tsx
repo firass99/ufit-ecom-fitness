@@ -42,14 +42,16 @@ export default function CartCountBadge() {
   const clearCart = useCartStore((s) => s.clearCart);
   const currency = useCurrencyStore((s) => s.currency);
   const [open, setOpen] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     async function hydrateCart() {
       try {
         const session = await getSession();
-        const userId = session?.user?.id;
-        if (!userId) return clearCart();
-        const cart = await getCart(userId);
+        const id = session?.user?.id ?? null;
+        setUserId(id);
+        if (!id) return clearCart();
+        const cart = await getCart(id);
         setCart(cart?.items || []);
       } catch {
         clearCart();
@@ -64,22 +66,24 @@ export default function CartCountBadge() {
     quantity: number,
     stock: number,
   ) => {
-    const session = await getSession();
-    const userId = session?.user?.id;
     if (!userId) return;
     if (quantity >= stock) {
       toast.error(t('max_stock'));
       return;
     }
-    await addToCart({
-      userId,
-      currency,
-      variantId: variantId ?? undefined,
-      productId: productId ?? undefined,
-      quantity: 1,
-    });
-    const cart = await getCart(userId);
-    setCart(cart?.items || []);
+    try {
+      await addToCart({
+        userId,
+        currency,
+        variantId: variantId ?? undefined,
+        productId: productId ?? undefined,
+        quantity: 1,
+      });
+      const cart = await getCart(userId);
+      setCart(cart?.items || []);
+    } catch {
+      toast.error(t('error'));
+    }
   };
 
   const handleMinus = async (
@@ -88,34 +92,38 @@ export default function CartCountBadge() {
     itemId: string,
     quantity: number,
   ) => {
-    const session = await getSession();
-    const userId = session?.user?.id;
     if (!userId) return;
 
-    if (quantity <= 1) {
-      await removeFromCart(userId, itemId);
-    } else {
-      await addToCart({
-        userId,
-        currency,
-        variantId: variantId ?? undefined,
-        productId: productId ?? undefined,
-        quantity: -1,
-      });
-    }
+    try {
+      if (quantity <= 1) {
+        await removeFromCart(userId, itemId);
+      } else {
+        await addToCart({
+          userId,
+          currency,
+          variantId: variantId ?? undefined,
+          productId: productId ?? undefined,
+          quantity: -1,
+        });
+      }
 
-    const cart = await getCart(userId);
-    setCart(cart?.items || []);
+      const cart = await getCart(userId);
+      setCart(cart?.items || []);
+    } catch {
+      toast.error(t('error'));
+    }
   };
 
   const handleRemove = async (itemId: string) => {
-    const session = await getSession();
-    const userId = session?.user?.id;
     if (!userId) return;
 
-    await removeFromCart(userId, itemId);
-    const cart = await getCart(userId);
-    setCart(cart?.items || []);
+    try {
+      await removeFromCart(userId, itemId);
+      const cart = await getCart(userId);
+      setCart(cart?.items || []);
+    } catch {
+      toast.error(t('error'));
+    }
   };
 
   const subtotal = items.reduce((sum, item) => {
