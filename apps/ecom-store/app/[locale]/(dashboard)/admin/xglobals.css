@@ -1,0 +1,176 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    
+    
+    /* Light mode chart colors (examples) */
+    --chart-1: 220 80% 50%; /* A shade of blue */
+    --chart-2: 160 70% 45%; /* A shade of green */
+    --chart-3: 350 85% 60%; /* A shade of red */
+    --chart-4: 40 90% 55%;  /* A shade of orange */
+    --chart-5: 200 85% 70%; /* A shade of purple */
+    --chart-6: 10 40% 65%;  /* A shade of brown */
+    --chart-7: 300 50% 55%; /* A shade of pink */
+    --chart-8: hsl(60, 100%, 50%); /* A shade of yellow */
+
+    /* Light Mode */
+    --background: 210 50% 98%; /* #F5F9FF (Soft light blue) */
+    --foreground: 0 0% 20%; /* #333333 (Dark text for contrast) */
+    
+    --card: 210 50% 98%; /* #F5F9FF (Light card background) */
+    --card-foreground: 0 0% 15%; /* #262626 (Dark text for card) */
+    
+    --popover: 210 50% 98%; /* #F5F9FF */
+    --popover-foreground: 0 0% 20%; /* #333333 */
+    
+    /* Primary is kept vibrant and energetic */
+    --primary: 16 90% 56%; /* #FF5722 (Energetic Orange) */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF (Pure white) */
+    
+    --secondary: 215 80% 40%; /* #0288D1 (Vibrant Blue) */
+    --secondary-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --muted: 210 20% 86%; /* #D9E4EF (Muted blue-gray) */
+    --muted-foreground: 0 0% 15%; /* #262626 */
+    
+    --accent: 70 70% 40%; /* #8BC34A (Fresh Green) */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
+    
+
+    --success: 142 76% 36%; /* #4CAF50 (Fresh Green) */
+    --success-foreground: 0 0% 100%; /* #FFFFFF */
+
+    --danger: 0 70% 50%; /*rgb(221, 27, 24) (Bold Red) */
+    --danger-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --destructive: 0 70% 50%; /* #E53935 (Bold Red) */
+    --destructive-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --border: 210 20% 80%; /* #C4D1E0 (Muted border) */
+    --input: 210 20% 80%; /* #C4D1E0 */
+    --ring: 16 90% 56%; /* #FF5722 (Energetic Orange) */
+    
+    --radius: 0.5rem;
+    
+    --sidebar-background: 0 0% 98%;
+    
+    --sidebar-foreground: 240 5.3% 26.1%;
+    
+    --sidebar-primary: 240 5.9% 10%;
+    
+    --sidebar-primary-foreground: 0 0% 98%;
+    
+    --sidebar-accent: 240 4.8% 95.9%;
+    
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    
+    --sidebar-border: 220 13% 91%;
+    
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+
+  .dark {
+
+    /* Dark mode chart colors (examples) */
+    --chart-1: 220 70% 70%; /* A lighter shade of blue for dark mode */
+    --chart-2: 160 60% 65%; /* A lighter shade of green for dark mode */
+    --chart-3: 350 75% 75%; /* A lighter shade of red/pink for dark mode */
+    --chart-4: 40 80% 70%;  /* A lighter shade of orange/yellow for dark mode */
+    --chart-5: 200 85% 80%; /* A lighter shade of purple for dark mode */
+    --chart-6: 10 40% 75%;  /* A lighter shade of brown for dark mode */
+    --chart-7: 300 50% 65%; /* A lighter shade of pink for dark mode */
+    --chart-8: 60 100% 60%; /* A lighter shade of yellow for dark mode */
+
+    /* Dark mode colors */
+    --background: 215 25% 15%; /* #263238 (Dark Blue-Gray) */
+    --foreground: 210 20% 90%; /* #E3F2FD (Light text for dark mode) */
+    --card: 215 25% 15%; /* #263238 */
+    --card-foreground: 210 20% 90%; /* #E3F2FD */
+    --popover: 215 25% 15%; /* #263238 */
+    --popover-foreground: 210 20% 90%; /* #E3F2FD */
+    
+    --primary: 16 90% 56%; /* #FF5722 */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --secondary: 215 80% 40%; /* #0288D1 */
+    --secondary-foreground: 210 20% 90%; /* #E3F2FD */
+    
+    --muted: 210 20% 30%; /* #4A6572 (Muted Blue-Gray) */
+    --muted-foreground: 210 20% 90%; /* #E3F2FD */
+    
+    --accent: 70 70% 40%; /* #8BC34A */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    
+    --success: 142 76% 36%; /* #4CAF50 (Fresh Green) */
+    --success-foreground: 0 0% 100%; /* #FFFFFF */
+
+    --danger: 0 70% 50%; /*rgb(221, 27, 24) (Bold Red) */
+    --danger-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    
+    --destructive: 0 70% 50%; /* #E53935 */
+    --destructive-foreground: 210 20% 90%; /* #E3F2FD */
+    
+    --success: 142 76% 36%; /* #4CAF50 */
+    --success-foreground: 210 20% 90%; /* #E3F2FD */
+    
+    --border: 210 20% 30%; /* #4A6572 */
+    --input: 210 20% 30%; /* #4A6572 */
+    --ring: 16 90% 56%; /* #FF5722 */
+    
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply min-w-0;
+    @apply border-border;
+  }
+html {
+    text-rendering: optimizelegibility;
+  }
+  body {
+    @apply min-h-[100dvh];
+    @apply bg-background text-foreground;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  html[lang='ar'] body {
+    font-family: 'Cairo', sans-serif;
+  }
+  
+  .font-arabic {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+  }
+}
+@layer utilities {
+  .animate-fade-in {
+    @apply opacity-100;
+    animation: fadeIn 0.3s ease-in-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}

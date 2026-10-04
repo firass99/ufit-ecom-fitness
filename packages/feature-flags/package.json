@@ -1,0 +1,19 @@
+{
+  "name": "@repo/feature-flags",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@repo/analytics": "workspace:*",
+    "@repo/design-system": "workspace:*",
+    "@repo/database": "workspace:*",
+    "@repo/env": "workspace:*",
+    "@vercel/flags": "^3.1.0"
+  },
+  "peerDependencies": {
+    "next": "15.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "@repo/typescript-config": "workspace:*"
+  }
+}

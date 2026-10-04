@@ -1,0 +1,226 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html[lang='ar'] body {
+  font-family: 'Cairo', sans-serif;
+}
+
+.font-arabic {
+  font-family: 'Cairo', sans-serif;
+}
+
+.rtl {
+  direction: rtl;
+}
+
+.ltr {
+  direction: ltr;
+}
+
+/* RTL-specific utilities */
+.rtl .text-left {
+  text-align: right;
+}
+
+.rtl .text-right {
+  text-align: left;
+}
+
+.rtl .ml-auto {
+  margin-left: unset;
+  margin-right: auto;
+}
+
+.rtl .mr-auto {
+  margin-right: unset;
+  margin-left: auto;
+}
+
+.rtl .pl-4 {
+  padding-left: unset;
+  padding-right: 1rem;
+}
+
+.rtl .pr-4 {
+  padding-right: unset;
+  padding-left: 1rem;
+}
+
+.rtl .border-l {
+  border-left: none;
+  border-right: 1px solid;
+}
+
+.rtl .border-r {
+  border-right: none;
+  border-left: 1px solid;
+}
+
+/* Table RTL support */
+.rtl table {
+  direction: rtl;
+}
+
+.rtl th:first-child,
+.rtl td:first-child {
+  text-align: right;
+}
+
+.rtl th:last-child,
+.rtl td:last-child {
+  text-align: left;
+}
+
+/* Form RTL support */
+.rtl .form-input,
+.rtl .form-select,
+.rtl .form-textarea {
+  text-align: right;
+}
+
+.rtl .form-checkbox,
+.rtl .form-radio {
+  margin-left: 0.5rem;
+  margin-right: 0;
+}
+@layer base {
+  :root {
+    /* Light Mode */
+    --background: 210 50% 98%; /* #F5F9FF (Soft light blue) */
+    --foreground: 0 0% 20%; /* #333333 (Dark text for contrast) */
+    
+    --card: 210 50% 98%; /* #F5F9FF (Light card background) */
+    --card-foreground: 0 0% 15%; /* #262626 (Dark text for card) */
+    
+    --popover: 210 50% 98%; /* #F5F9FF */
+    --popover-foreground: 0 0% 20%; /* #333333 */
+    
+    /* Primary is kept vibrant and energetic */
+    --primary: 16 90% 56%; /* #FF5722 (Energetic Orange) */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF (Pure white) */
+    
+    --secondary: 215 80% 40%; /* #0288D1 (Vibrant Blue) */
+    --secondary-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --muted: 210 20% 86%; /* #D9E4EF (Muted blue-gray) */
+    --muted-foreground: 0 0% 15%; /* #262626 */
+    
+    --accent: 70 70% 40%; /* #8BC34A (Fresh Green) */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --destructive: 0 70% 50%; /* #E53935 (Bold Red) */
+    --destructive-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --success: 142 76% 36%; /* #4CAF50 (Fresh Green) */
+    --success-foreground: 0 0% 100%; /* #FFFFFF */
+
+    --danger: 0 70% 50%; /*rgb(221, 27, 24) (Bold Red) */
+    --danger-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --border: 210 20% 80%; /* #C4D1E0 (Muted border) */
+    --input: 210 20% 80%; /* #C4D1E0 */
+    --ring: 16 90% 56%; /* #FF5722 (Energetic Orange) */
+    
+    --radius: 0.5rem;
+    
+    --sidebar-background: 0 0% 98%;
+    
+    --sidebar-foreground: 240 5.3% 26.1%;
+    
+    --sidebar-primary: 240 5.9% 10%;
+    
+    --sidebar-primary-foreground: 0 0% 98%;
+    
+    --sidebar-accent: 240 4.8% 95.9%;
+    
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    
+    --sidebar-border: 220 13% 91%;
+    
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Chart Colors */
+    --chart-1: 12 76% 61%;   /* Orange-red */
+    --chart-2: 173 58% 39%;  /* Teal */
+    --chart-3: 197 37% 24%;  /* Dark blue */
+    --chart-4: 43 74% 66%;   /* Yellow */
+    --chart-5: 27 87% 67%;   /* Orange */
+    --chart-6: 262 83% 58%;  /* Purple */
+    --chart-7: 142 76% 36%;  /* Green */
+    --chart-8: 346 77% 49%;  /* Pink */
+  }
+
+
+  .dark {
+    /* Dark mode colors */
+    --background: 215 25% 15%; /* #263238 (Dark Blue-Gray) */
+    --foreground: 210 20% 90%; /* #E3F2FD (Light text for dark mode) */
+    --card: 215 25% 15%; /* #263238 */
+    --card-foreground: 210 20% 90%; /* #E3F2FD */
+    --popover: 215 25% 15%; /* #263238 */
+    --popover-foreground: 210 20% 90%; /* #E3F2FD */
+    
+    --primary: 16 90% 56%; /* #FF5722 */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --secondary: 215 80% 40%; /* #0288D1 */
+    --secondary-foreground: 210 20% 90%; /* #E3F2FD */
+    
+    --muted: 210 20% 30%; /* #4A6572 (Muted Blue-Gray) */
+    --muted-foreground: 210 20% 90%; /* #E3F2FD */
+    
+    --accent: 70 70% 40%; /* #8BC34A */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --destructive: 0 70% 50%; /* #E53935 */
+    --destructive-foreground: 210 20% 90%; /* #E3F2FD */
+    
+
+    --success: 142 76% 36%; /* #4CAF50 (Fresh Green) */
+    --success-foreground: 0 0% 100%; /* #FFFFFF */
+
+    --danger: 0 70% 50%; /*rgb(221, 27, 24) (Bold Red) */
+    --danger-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --border: 210 20% 30%; /* #4A6572 */
+    --input: 210 20% 30%; /* #4A6572 */
+    --ring: 16 90% 56%; /* #FF5722 */
+    
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Chart Colors for Dark Mode */
+    --chart-1: 220 70% 50%;  /* Blue */
+    --chart-2: 160 60% 45%;  /* Green */
+    --chart-3: 30 80% 55%;   /* Orange */
+    --chart-4: 280 65% 60%;  /* Purple */
+    --chart-5: 340 75% 55%;  /* Pink */
+    --chart-6: 262 83% 68%;  /* Light purple */
+    --chart-7: 142 76% 46%;  /* Light green */
+    --chart-8: 346 77% 59%;  /* Light pink */
+  }
+}
+
+@layer base {
+  * {
+    @apply min-w-0;
+    @apply border-border;
+  }
+html {
+    text-rendering: optimizelegibility;
+  }
+  body {
+    @apply min-h-[100dvh];
+    @apply bg-background text-foreground;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+}

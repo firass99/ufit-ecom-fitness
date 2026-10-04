@@ -1,0 +1,105 @@
+{
+  "user": {
+    "name": "Admin",
+    "email": "Admin@ufitpal.com",
+    "avatar": "https://github.com/shadcn.png"
+  },
+  "navMain": [
+    {
+      "title": "Users",
+      "url": "#",
+      "icon": "UsersIcon",
+      "isActive": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/admin/users"
+        },
+        {
+          "title": "List",
+          "url": "/admin/users/list"
+        }
+      ]
+    },
+    {
+      "title": "Products",
+      "url": "#",
+      "icon": "Shapes",
+      "isActive": true,
+      "items": [
+        {
+          "title": "Add",
+          "url": "/admin/products/add"
+        },
+        {
+          "title": "List",
+          "url": "/admin/products/list"
+        }
+      ]
+    },
+    {
+      "title": "Orders",
+      "url": "#",
+      "icon": "ShoppingBag",
+      "isActive": false,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/admin/orders"
+        },
+        {
+          "title": "List",
+          "url": "/admin/orders/list"
+        }
+      ]
+    },
+    {
+      "title": "Categories",
+      "url": "#",
+      "icon": "Hash",
+      "isActive": false,
+      "items": [
+        {
+          "title": "Add",
+          "url": "/admin/categories/add"
+        },
+        {
+          "title": "List",
+          "url": "/admin/categories/list"
+        }
+      ]
+    },
+    {
+      "title": "Promotions",
+      "url": "#",
+      "icon": "Percent",
+      "isActive": false,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/admin/promotions"
+        },
+        {
+          "title": "Add",
+          "url": "/admin/promotions/add"
+        }
+      ]
+    },
+    {
+      "title": "Brands",
+      "url": "#",
+      "icon": "Tag",
+      "isActive": false,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/admin/brands"
+        },
+        {
+          "title": "Add",
+          "url": "/admin/brands/add"
+        }
+      ]
+    }
+  ]
+}

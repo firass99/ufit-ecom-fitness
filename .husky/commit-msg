@@ -1,0 +1,6 @@
+#!/bin/sh
+#test2 gitmoji
+. "$(dirname "$0")/_/husky.sh"
+#azdazd
+exec < /dev/tty && gitmoji --hook $1
+#pnpm commit

@@ -1,0 +1,389 @@
+generator client {
+  provider      = "prisma-client-js"
+  url           = "database.db"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum Role {
+  ADMIN
+  ATHLETE
+  NUTRITIONIST
+  COACH
+}
+
+enum Gender {
+  MEN
+  WOMEN
+  UNISEX
+}
+
+enum Size {
+  XS
+  S
+  M
+  L
+  XL
+  XXL
+}
+
+enum OrderStatus {
+  PENDING
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+enum Currency {
+  USD
+  EUR
+  TND
+  AED
+  SAR
+}
+
+// Promo
+model Promo {
+  id           String       @id @default(uuid())
+  code         String       @unique
+  description  String?
+  discountType DiscountType
+  value        Decimal      @db.Decimal(10, 2)
+  maxUsage     Int?
+  usedCount    Int          @default(0)
+  expiresAt    DateTime?
+  isActive     Boolean      @default(true)
+  orders       Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Brand
+model Brand {
+  id        String    @id @default(uuid())
+  name      String
+  logo      String?
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([name])
+}
+
+// Product
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  images      String[]
+  stock       Int?     @default(0)
+  isAvailable Boolean? @default(true)
+  brandId     String?
+  categoryId  String
+
+  category    Category @relation(fields: [categoryId], references: [id])
+  brand       Brand?   @relation(fields: [brandId], references: [id])
+  hasVariants Boolean  @default(false) // ✅ NEW FIELD
+
+  variants     Variant[]
+  translations ProductTranslation[]
+  prices       ProductPrice[]
+  CartItem     CartItem[]
+  OrderItem    OrderItem[]
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @default(now())
+
+  @@index([categoryId])
+  @@index([brandId])
+}
+
+model ProductTranslation {
+  id          String @id @default(uuid())
+  productId   String
+  locale      String
+  name        String
+  description String
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, locale])
+}
+
+// Variant
+model Variant {
+  id          String  @id @default(uuid())
+  productId   String
+  size        Size?
+  color       String?
+  gender      Gender
+  stock       Int     @default(0)
+  isAvailable Boolean @default(true)
+
+  product    Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+  prices     VariantPrice[]
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @default(now())
+
+  @@unique([productId, size, color, gender])
+}
+
+// product & variant pricing by currency
+model ProductPrice {
+  id          String    @id @default(uuid())
+  productId   String
+  currency    Currency
+  price       Decimal   @db.Decimal(10, 2)
+  salePrice   Decimal?  @db.Decimal(10, 2)
+  saleStartAt DateTime?
+  saleEndAt   DateTime?
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, currency])
+}
+
+model VariantPrice {
+  id          String    @id @default(uuid())
+  variantId   String
+  currency    Currency
+  price       Decimal   @db.Decimal(10, 2)
+  salePrice   Decimal?  @db.Decimal(10, 2)
+  saleStartAt DateTime?
+  saleEndAt   DateTime?
+
+  variant Variant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([variantId, currency])
+}
+
+// Payment 
+model Payment {
+  id              String        @id @default(uuid())
+  orderId         String        @unique
+  order           Order         @relation(fields: [orderId], references: [id])
+  amount          Decimal       @db.Decimal(10, 2)
+  status          PaymentStatus @default(PENDING)
+  provider        String // "stripe", "paypal", etc.
+  paymentIntentId String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now())
+}
+
+// Order
+model Order {
+  id                    String      @id @default(uuid())
+  shippingAddress       String?
+  phoneNumber           String?
+  userId                String
+  user                  User        @relation(fields: [userId], references: [id])
+  items                 OrderItem[]
+  totalPrice            Decimal     @db.Decimal(10, 2)
+  currency              Currency
+  status                OrderStatus @default(PENDING)
+  payment               Payment?
+  promoId               String?
+  promo                 Promo?      @relation(fields: [promoId], references: [id])
+  trackingCode          String?
+  shippingProvider      String?
+  estimatedDeliveryDate DateTime?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([promoId])
+}
+
+// OrderItem
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  variantId String?
+  productId String?
+  quantity  Int
+
+  unitPrice Decimal  @db.Decimal(10, 2)
+  currency  Currency
+
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  variant Variant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([orderId, variantId])
+  @@unique([orderId, productId])
+  @@index([orderId])
+  @@index([variantId])
+  @@index([productId])
+}
+
+// Cart
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+  currency  Currency
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now())
+}
+
+model CartItem {
+  id        String  @id @default(uuid())
+  cartId    String
+  variantId String?
+  productId String?
+  quantity  Int
+
+  cart    Cart     @relation(fields: [cartId], references: [id])
+  product Product? @relation(fields: [productId], references: [id])
+  variant Variant? @relation(fields: [variantId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@unique([cartId, variantId])
+  @@unique([cartId, productId])
+  @@index([cartId])
+  @@index([variantId])
+  @@index([productId])
+}
+
+// Category & Category Translations
+model Category {
+  id           String                @id @default(uuid())
+  name         String
+  description  String?
+  image        String?
+  products     Product[]
+  translations CategoryTranslation[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @default(now())
+}
+
+model CategoryTranslation {
+  id          String  @id @default(uuid())
+  categoryId  String
+  locale      String
+  name        String
+  description String?
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, locale])
+}
+
+// User & Roles ..
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  fullName      String
+  role          Role           @default(ATHLETE)
+  isActive      Boolean        @default(true)
+  notifications Notification[]
+  athlete       Athlete?
+  coach         Coach?
+  nutritionist  Nutritionist?
+  session       Session?
+  cart          Cart?
+  orders        Order[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now())
+}
+
+model Notification {
+  id           String                     @id @default(uuid())
+  title        String
+  description  String
+  isRead       Boolean                    @default(false)
+  userId       String
+  user         User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  translations NotificationTranslations[]
+}
+
+model NotificationTranslations {
+  id             String       @id @default(uuid())
+  title          String
+  description    String
+  locale         String
+  notificationId String
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, locale])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshToken String   @db.Text
+  valid        Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+}
+
+model Athlete {
+  id        String   @id @default(uuid())
+  age       Int
+  weight    Int
+  height    Int
+  address   String
+  phone     String
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Coach {
+  id           String   @id @default(uuid())
+  gymAddress   String
+  experience   String
+  phone        String
+  specialities String[]
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+}
+
+model Nutritionist {
+  id             String   @id @default(uuid())
+  workingAddress String
+  phone          String
+  experience     String
+  cv             String
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
+}

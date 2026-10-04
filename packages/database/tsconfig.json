@@ -1,0 +1,9 @@
+// tsconfig.json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@repo/database": ["packages/database/src"]
+    }
+  }
+}

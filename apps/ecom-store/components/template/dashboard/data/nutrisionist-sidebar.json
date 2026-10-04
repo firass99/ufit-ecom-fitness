@@ -1,0 +1,156 @@
+{
+  "user": {
+    "name": "Nutritionist",
+    "email": "Nutritionist@ufitpal.com",
+    "avatar": "https://github.com/shadcn.png"
+  },
+  "navMain": [
+    {
+      "title": "My Meals",
+      "url": "#",
+      "icon": "Shapes",
+      "isActive": true,
+      "items": [
+        {
+          "title": "History",
+          "url": "#"
+        },
+        {
+          "title": "Explorer",
+          "url": "#"
+        }
+      ]
+    },
+    {
+      "title": "Orders",
+      "url": "#",
+      "icon": "ShoppingBag",
+      "items": [
+        {
+          "title": "Quantum",
+          "url": "#"
+        }
+      ]
+    },
+    {
+      "title": "Categories",
+      "url": "#",
+      "icon": "Hash",
+      "items": [
+        {
+          "title": "Introduction",
+          "url": "#"
+        },
+        {
+          "title": "Get Started",
+          "url": "#"
+        },
+        {
+          "title": "Tutorials",
+          "url": "#"
+        },
+        {
+          "title": "Changelog",
+          "url": "#"
+        }
+      ]
+    },
+    {
+      "title": "Promotions",
+      "url": "#",
+      "icon": "NotebookPen",
+      "items": [
+        {
+          "title": "Overview",
+          "url": "#"
+        },
+        {
+          "title": "Team",
+          "url": "#"
+        }
+      ]
+    }
+  ],
+  "navClouds": [
+    {
+      "title": "Capture",
+      "icon": "CameraIcon",
+      "isActive": true,
+      "url": "#",
+      "items": [
+        {
+          "title": "Active Proposals",
+          "url": "#"
+        },
+        {
+          "title": "Archived",
+          "url": "#"
+        }
+      ]
+    },
+    {
+      "title": "Proposal",
+      "icon": "FileTextIcon",
+      "url": "#",
+      "items": [
+        {
+          "title": "Active Proposals",
+          "url": "#"
+        },
+        {
+          "title": "Archived",
+          "url": "#"
+        }
+      ]
+    },
+    {
+      "title": "Prompts",
+      "icon": "FileCodeIcon",
+      "url": "#",
+      "items": [
+        {
+          "title": "Active Proposals",
+          "url": "#"
+        },
+        {
+          "title": "Archived",
+          "url": "#"
+        }
+      ]
+    }
+  ],
+  "navSecondary": [
+    {
+      "title": "Settings",
+      "url": "#",
+      "icon": "SettingsIcon"
+    },
+    {
+      "title": "Get Help",
+      "url": "#",
+      "icon": "HelpCircleIcon"
+    },
+    {
+      "title": "Search",
+      "url": "#",
+      "icon": "SearchIcon"
+    }
+  ],
+  "documents": [
+    {
+      "name": "Data Library",
+      "url": "#",
+      "icon": "DatabaseIcon"
+    },
+    {
+      "name": "Reports",
+      "url": "#",
+      "icon": "ClipboardListIcon"
+    },
+    {
+      "name": "Word Assistant",
+      "url": "#",
+      "icon": "FileIcon"
+    }
+  ]
+}

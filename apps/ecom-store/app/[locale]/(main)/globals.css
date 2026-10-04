@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html[lang='ar'] body {
+  font-family: 'Cairo', sans-serif;
+}
+@layer base {
+  :root {
+    /* Light Mode */
+    --background: 210 50% 98%; /* #F5F9FF (Soft light blue) */
+    --foreground: 0 0% 20%; /* #333333 (Dark text for contrast) */
+    
+    --card: 210 50% 98%; /* #F5F9FF (Light card background) */
+    --card-foreground: 0 0% 15%; /* #262626 (Dark text for card) */
+    
+    --popover: 210 50% 98%; /* #F5F9FF */
+    --popover-foreground: 0 0% 20%; /* #333333 */
+    
+    /* Primary is kept vibrant and energetic */
+    --primary: 16 90% 56%; /* #FF5722 (Energetic Orange) */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF (Pure white) */
+    
+    --secondary: 215 80% 40%; /* #0288D1 (Vibrant Blue) */
+    --secondary-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --muted: 210 20% 86%; /* #D9E4EF (Muted blue-gray) */
+    --muted-foreground: 0 0% 15%; /* #262626 */
+    
+    --accent: 70 70% 40%; /* #8BC34A (Fresh Green) */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --destructive: 0 70% 50%; /* #E53935 (Bold Red) */
+    --destructive-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --success: 142 76% 36%; /* #4CAF50 (Fresh Green) */
+    --success-foreground: 0 0% 100%; /* #FFFFFF */
+
+    --danger: 0 70% 50%; /*rgb(221, 27, 24) (Bold Red) */
+    --danger-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --border: 210 20% 80%; /* #C4D1E0 (Muted border) */
+    --input: 210 20% 80%; /* #C4D1E0 */
+    --ring: 16 90% 56%; /* #FF5722 (Energetic Orange) */
+    
+    --radius: 0.5rem;
+    
+    --sidebar-background: 0 0% 98%;
+    
+    --sidebar-foreground: 240 5.3% 26.1%;
+    
+    --sidebar-primary: 240 5.9% 10%;
+    
+    --sidebar-primary-foreground: 0 0% 98%;
+    
+    --sidebar-accent: 240 4.8% 95.9%;
+    
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    
+    --sidebar-border: 220 13% 91%;
+    
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Chart Colors */
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+
+  .dark {
+    /* Dark mode colors */
+    --background: 215 25% 15%; /* #263238 (Dark Blue-Gray) */
+    --foreground: 210 20% 90%; /* #E3F2FD (Light text for dark mode) */
+    --card: 215 25% 15%; /* #263238 */
+    --card-foreground: 210 20% 90%; /* #E3F2FD */
+    --popover: 215 25% 15%; /* #263238 */
+    --popover-foreground: 210 20% 90%; /* #E3F2FD */
+    
+    --primary: 16 90% 56%; /* #FF5722 */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --secondary: 215 80% 40%; /* #0288D1 */
+    --secondary-foreground: 210 20% 90%; /* #E3F2FD */
+    
+    --muted: 210 20% 30%; /* #4A6572 (Muted Blue-Gray) */
+    --muted-foreground: 210 20% 90%; /* #E3F2FD */
+    
+    --accent: 70 70% 40%; /* #8BC34A */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --destructive: 0 70% 50%; /* #E53935 */
+    --destructive-foreground: 210 20% 90%; /* #E3F2FD */
+    
+
+    --success: 142 76% 36%; /* #4CAF50 (Fresh Green) */
+    --success-foreground: 0 0% 100%; /* #FFFFFF */
+
+    --danger: 0 70% 50%; /*rgb(221, 27, 24) (Bold Red) */
+    --danger-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --border: 210 20% 30%; /* #4A6572 */
+    --input: 210 20% 30%; /* #4A6572 */
+    --ring: 16 90% 56%; /* #FF5722 */
+    
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Chart Colors for Dark Mode */
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply min-w-0;
+    @apply border-border;
+  }
+html {
+    text-rendering: optimizelegibility;
+  }
+  body {
+    @apply min-h-[100dvh];
+    @apply bg-background text-foreground;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+}

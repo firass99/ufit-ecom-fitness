@@ -1,0 +1,138 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+@import "tailwindcss";
+@config "../../tailwind-config/config";
+
+@layer base {
+  :root {
+    /* Core palette */
+    --background: 210 50% 98%; /* #F5F9FF (Soft light blue) */
+    --foreground: 0 0% 20%; /* #333333 (Dark text for contrast) */
+    --card: 210 50% 98%; /* #F5F9FF (Light card background) */
+    --card-foreground: 0 0% 15%; /* #262626 (Dark text for card) */
+    --popover: 210 50% 98%; /* #F5F9FF */
+    --popover-foreground: 0 0% 20%; /* #333333 */
+    
+    /* Primary is kept vibrant and energetic */
+    --primary: 16 90% 56%; /* #FF5722 (Energetic Orange) */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF (Pure white) */
+    
+    --secondary: 215 80% 40%; /* #0288D1 (Vibrant Blue) */
+    --secondary-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --muted: 210 20% 86%; /* #D9E4EF (Muted blue-gray) */
+    --muted-foreground: 0 0% 15%; /* #262626 */
+    
+    --accent: 70 70% 40%; /* #8BC34A (Fresh Green) */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --destructive: 0 70% 50%; /* #E53935 (Bold Red) */
+    --destructive-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --success: 142 76% 36%; /* #4CAF50 (Bright Green) */
+    --success-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --warning: 45 100% 50%; /* #FFEB3B (Bright Yellow) */
+    --warning-foreground: 0 0% 15%; /* #262626 */
+    
+    --border: 210 20% 80%; /* #C4D1E0 (Muted border) */
+    --input: 210 20% 80%; /* #C4D1E0 */
+    --ring: 16 90% 56%; /* #FF5722 (Energetic Orange) */
+    
+    --radius: 0.5rem;
+    
+    /* Chart colors updated for energetic tones */
+    --chart-1: 16 90% 56%; /* #FF5722 */
+    --chart-2: 215 80% 40%; /* #0288D1 */
+    --chart-3: 70 70% 40%; /* #8BC34A */
+    --chart-4: 45 100% 50%; /* #FFEB3B */
+    --chart-5: 210 20% 86%; /* #D9E4EF */
+    
+    /* Sidebar for light mode */
+    --sidebar-background: 0 0% 98%; /* #F5F9FF */
+    --sidebar-foreground: 240 5.3% 26.1%; /* #333333 */
+    --sidebar-primary: 240 5.9% 10%; /* #FF5722 */
+    --sidebar-primary-foreground: 0 0% 98%; /* #FFFFFF */
+    --sidebar-accent: 240 4.8% 95.9%; /* #0288D1 */
+    --sidebar-accent-foreground: 240 5.9% 10%; /* #FFFFFF */
+    --sidebar-border: 220 13% 91%; /* #C4D1E0 */
+    --sidebar-ring: 217.2 91.2% 59.8%; /* #FF5722 */
+  }
+
+  .dark {
+    /* Dark mode colors */
+    --background: 215 25% 15%; /* #263238 (Dark Blue-Gray) */
+    --foreground: 210 20% 90%; /* #E3F2FD (Light text for dark mode) */
+    --card: 215 25% 15%; /* #263238 */
+    --card-foreground: 210 20% 90%; /* #E3F2FD */
+    --popover: 215 25% 15%; /* #263238 */
+    --popover-foreground: 210 20% 90%; /* #E3F2FD */
+    
+    --primary: 16 90% 56%; /* #FF5722 */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --secondary: 215 80% 40%; /* #0288D1 */
+    --secondary-foreground: 210 20% 90%; /* #E3F2FD */
+    
+    --muted: 210 20% 30%; /* #4A6572 (Muted Blue-Gray) */
+    --muted-foreground: 210 20% 90%; /* #E3F2FD */
+    
+    --accent: 70 70% 40%; /* #8BC34A */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --destructive: 0 70% 50%; /* #E53935 */
+    --destructive-foreground: 210 20% 90%; /* #E3F2FD */
+    
+    --success: 142 76% 36%; /* #4CAF50 */
+    --success-foreground: 210 20% 90%; /* #E3F2FD */
+    
+    --warning: 45 100% 50%; /* #FFEB3B */
+    --warning-foreground: 215 25% 15%; /* #263238 */
+    
+    --border: 210 20% 30%; /* #4A6572 */
+    --input: 210 20% 30%; /* #4A6572 */
+    --ring: 16 90% 56%; /* #FF5722 */
+    
+    /* Chart colors for dark mode */
+    --chart-1: 16 90% 56%; /* #FF5722 */
+    --chart-2: 215 80% 40%; /* #0288D1 */
+    --chart-3: 70 70% 40%; /* #8BC34A */
+    --chart-4: 45 100% 50%; /* #FFEB3B */
+    --chart-5: 210 20% 30%; /* #4A6572 */
+    
+    /* Sidebar for dark mode */
+    --sidebar-background: 240 5.9% 10%; /* #263238 */
+    --sidebar-foreground: 240 4.8% 95.9%; /* #E3F2FD */
+    --sidebar-primary: 224.3 76.3% 48%; /* #FF5722 */
+    --sidebar-primary-foreground: 0 0% 100%; /* #FFFFFF */
+    --sidebar-accent: 240 3.7% 15.9%; /* #8BC34A */
+    --sidebar-accent-foreground: 240 4.8% 95.9%; /* #E3F2FD */
+    --sidebar-border: 240 3.7% 15.9%; /* #4A6572 */
+    --sidebar-ring: 217.2 91.2% 59.8%; /* #FF5722 */
+  }
+}
+
+/* This layer is added by shadcn/ui */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* This layer is by next-forge */
+@layer base {
+  * {
+    @apply min-w-0;
+  }
+  html {
+    text-rendering: optimizelegibility;
+  }
+  body {
+    @apply min-h-[100dvh];
+  }
+}

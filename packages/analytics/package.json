@@ -1,0 +1,20 @@
+{
+  "name": "@repo/analytics",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@next/third-parties": "^15.1.6",
+    "@repo/env": "workspace:*",
+    "@vercel/analytics": "^1.4.1",
+    "posthog-js": "^1.215.6",
+    "posthog-node": "^4.5.0",
+    "react": "^19.0.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "22.13.1",
+    "@types/react": "19.0.8",
+    "@types/react-dom": "^19.0.3"
+  }
+}
